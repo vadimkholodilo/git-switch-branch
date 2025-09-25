@@ -20,11 +20,7 @@ class Program
             new Branch("hotfix", false)
         ];
 
-        if (!GitUtils.IsRepository(Environment.CurrentDirectory))
-        {
-            Console.WriteLine("Current directory is not a git repository. Quitting");
-            Environment.Exit(-1);
-        }
+        CheckRepository();
 
         var selectedBranchIndex = view.DisplayBranchesAndGetBranchIndex(branches);
 
@@ -35,6 +31,15 @@ class Program
         }
 
         CheckoutBranch(branches[selectedBranchIndex]);
+    }
+
+    private static void CheckRepository()
+    {
+        if (!GitUtils.IsRepository(Environment.CurrentDirectory))
+        {
+            Console.WriteLine("Current directory is not a git repository. Quitting");
+            Environment.Exit(-1);
+        }
     }
 
     private static void CheckoutBranch(Branch branch)
