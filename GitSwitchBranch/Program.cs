@@ -1,4 +1,5 @@
 ﻿using GitSwitchBranch.Models;
+using GitSwitchBranch.Utils;
 using GitSwitchBranch.Views;
 
 namespace GitSwitchBranch;
@@ -18,6 +19,12 @@ class Program
             new Branch("development", false),
             new Branch("hotfix", false)
         ];
+
+        if (!GitUtils.IsRepository(Environment.CurrentDirectory))
+        {
+            Console.WriteLine("Current directory is not a git repository. Quitting");
+            Environment.Exit(-1);
+        }
 
         var selectedBranchIndex = view.DisplayBranchesAndGetBranchIndex(branches);
 
