@@ -20,6 +20,7 @@ class Program
             new Branch("hotfix", false)
         ];
 
+        CheckIfGitIsAvailable();
         CheckRepository();
 
         var selectedBranchIndex = view.DisplayBranchesAndGetBranchIndex(branches);
@@ -33,12 +34,21 @@ class Program
         CheckoutBranch(branches[selectedBranchIndex]);
     }
 
+    private static void CheckIfGitIsAvailable()
+    {
+        if (!GitUtils.IsGitAvailable())
+        {
+            Console.WriteLine("Git was not found on your system. It is either not installed or not in your PATH, quitting");
+            Environment.Exit(-1);
+        }
+    }
+
     private static void CheckRepository()
     {
         if (!GitUtils.IsRepository(Environment.CurrentDirectory))
         {
             Console.WriteLine("Current directory is not a git repository. Quitting");
-            Environment.Exit(-1);
+            Environment.Exit(-2);
         }
     }
 
