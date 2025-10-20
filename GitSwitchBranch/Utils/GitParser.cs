@@ -20,7 +20,7 @@ public static class GitParser
                 throw new ArgumentNullException("Active branch was already found in the output");
 
             activeBranchFound = isActive;
-            result.Add(new Branch(branchName, isActive));
+            result.Add(new Branch(branchName.TrimStart('*', ' '), isActive));
         }
 
         return result;

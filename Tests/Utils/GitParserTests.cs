@@ -44,7 +44,7 @@ public class GitParserTests
         Assert.Equal(2, result.Count);
         var masterBranch = result[0];
         var developmentBranch = result[1];
-        Assert.Equal("* master", masterBranch.Name);
+        Assert.Equal("master", masterBranch.Name);
         Assert.True(masterBranch.IsActive);
         Assert.Equal("development", developmentBranch.Name);
     }
