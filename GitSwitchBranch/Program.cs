@@ -13,16 +13,10 @@ class Program
     {
         BaseView view = new SimpleView(DefaultWidth, DefaultHeight);
 
-        List<Branch> branches =
-        [
-            new Branch("master", true),
-            new Branch("development", false),
-            new Branch("hotfix", false)
-        ];
-
         CheckIfGitIsAvailable();
         CheckRepository();
 
+        var branches = GetBranches();
         var selectedBranchIndex = view.DisplayBranchesAndGetBranchIndex(branches);
 
         if (selectedBranchIndex == -1)
@@ -50,6 +44,11 @@ class Program
             Console.WriteLine("Current directory is not a git repository. Quitting");
             Environment.Exit(-2);
         }
+    }
+
+    private static List<Branch> GetBranches()
+    {
+        return GitUtils.GetAllBranches().ToList();
     }
 
     private static void CheckoutBranch(Branch branch)

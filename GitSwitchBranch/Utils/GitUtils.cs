@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using GitSwitchBranch.Models;
 
 namespace GitSwitchBranch.Utils;
 
@@ -28,6 +29,14 @@ public static class GitUtils
         {
             return false;
         }
+    }
+
+    public static IEnumerable<Branch> GetAllBranches(bool includeRemote = false)
+    {
+        var arguments = includeRemote ? "-a" : "";
+        var output = ExecuteGitCommand("branch", arguments);
+
+        return GitParser.ParseBranches(output);
     }
 
     private static string ExecuteGitCommand(string command, string arguments)
