@@ -46,6 +46,14 @@ public class GitClient
         return GitParser.ParseBranches(output);
     }
 
+    public void CheckoutBranch(string branchName)
+    {
+        if (string.IsNullOrEmpty(branchName))
+            throw new ArgumentNullException(nameof(branchName));
+
+        ExecuteGitCommand("checkout", branchName);
+    }
+
     private string ExecuteGitCommand(string command, string arguments)
     {
         const int timeoutMs = 10000;
@@ -77,7 +85,7 @@ public class GitClient
             string output = process.StandardOutput.ReadToEnd();
             string error = process.StandardError.ReadToEnd();
         
-            if (process.ExitCode != 0 || !string.IsNullOrEmpty(error))
+            if (process.ExitCode != 0 && !string.IsNullOrEmpty(error))
             {
                 throw new GitCommandExecutionException($"Git command failed: {error}");
             }

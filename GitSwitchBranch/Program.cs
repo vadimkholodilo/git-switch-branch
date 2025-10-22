@@ -59,6 +59,7 @@ class Program
             return;
         }
 
+        client.CheckoutBranch(branch.Name);
         Console.WriteLine($"Checked out {branch.Name}");
     }
 }
