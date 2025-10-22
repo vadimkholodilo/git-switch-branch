@@ -1,5 +1,4 @@
 ﻿using GitSwitchBranch.Models;
-using GitSwitchBranch.Utils;
 using GitSwitchBranch.Views;
 
 namespace GitSwitchBranch;
@@ -12,11 +11,12 @@ class Program
     static void Main(string[] args)
     {
         BaseView view = new SimpleView(DefaultWidth, DefaultHeight);
+        var gitClient = new GitClient.GitClient(Environment.CurrentDirectory);
 
-        CheckIfGitIsAvailable();
-        CheckRepository();
+        CheckIfGitIsAvailable(gitClient);
+        CheckRepository(gitClient);
 
-        var branches = GetBranches();
+        var branches = GetBranches(gitClient);
         var selectedBranchIndex = view.DisplayBranchesAndGetBranchIndex(branches);
 
         if (selectedBranchIndex == -1)
@@ -25,33 +25,33 @@ class Program
             Environment.Exit(0);
         }
 
-        CheckoutBranch(branches[selectedBranchIndex]);
+        CheckoutBranch(gitClient, branches[selectedBranchIndex]);
     }
 
-    private static void CheckIfGitIsAvailable()
+    private static void CheckIfGitIsAvailable(GitClient.GitClient client)
     {
-        if (!GitUtils.IsGitAvailable())
+        if (!client.IsGitAvailable())
         {
             Console.WriteLine("Git was not found on your system. It is either not installed or not in your PATH, quitting");
             Environment.Exit(-1);
         }
     }
 
-    private static void CheckRepository()
+    private static void CheckRepository(GitClient.GitClient client)
     {
-        if (!GitUtils.IsRepository(Environment.CurrentDirectory))
+        if (!client.IsRepository())
         {
             Console.WriteLine("Current directory is not a git repository. Quitting");
             Environment.Exit(-2);
         }
     }
 
-    private static List<Branch> GetBranches()
+    private static List<Branch> GetBranches(GitClient.GitClient client)
     {
-        return GitUtils.GetAllBranches().ToList();
+        return client.GetAllBranches().ToList();
     }
 
-    private static void CheckoutBranch(Branch branch)
+    private static void CheckoutBranch(GitClient.GitClient client, Branch branch)
     {
         if (branch.IsActive)
         {

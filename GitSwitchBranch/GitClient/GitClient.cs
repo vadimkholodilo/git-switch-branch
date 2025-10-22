@@ -1,15 +1,22 @@
 using System.Diagnostics;
 using GitSwitchBranch.Models;
 
-namespace GitSwitchBranch.Utils;
+namespace GitSwitchBranch.GitClient;
 
-public static class GitUtils
+public class GitClient
 {
-    public static bool IsRepository(string currentDirectoryPath)
+    private readonly string _currentDirectoryPath;
+
+    public GitClient(string currentDirectoryPath)
+    {
+        _currentDirectoryPath = currentDirectoryPath;
+    }
+
+    public bool IsRepository()
     {
         try
         {
-            return Directory.Exists(Path.Combine(currentDirectoryPath, ".git"));
+            return Directory.Exists(Path.Combine(_currentDirectoryPath, ".git"));
         }
         catch (Exception e)
         {
@@ -18,7 +25,7 @@ public static class GitUtils
         }
     }
 
-    public static bool IsGitAvailable()
+    public bool IsGitAvailable()
     {
         try
         {
@@ -31,7 +38,7 @@ public static class GitUtils
         }
     }
 
-    public static IEnumerable<Branch> GetAllBranches(bool includeRemote = false)
+    public IEnumerable<Branch> GetAllBranches(bool includeRemote = false)
     {
         var arguments = includeRemote ? "-a" : "";
         var output = ExecuteGitCommand("branch", arguments);
@@ -39,7 +46,7 @@ public static class GitUtils
         return GitParser.ParseBranches(output);
     }
 
-    private static string ExecuteGitCommand(string command, string arguments)
+    private string ExecuteGitCommand(string command, string arguments)
     {
         const int timeoutMs = 10000;
         try

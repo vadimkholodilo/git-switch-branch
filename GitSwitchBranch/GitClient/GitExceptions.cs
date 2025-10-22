@@ -1,4 +1,4 @@
-namespace GitSwitchBranch.Utils;
+namespace GitSwitchBranch.GitClient;
 
 /// <summary>
 /// Exception thrown when Git is not installed or not found in PATH.

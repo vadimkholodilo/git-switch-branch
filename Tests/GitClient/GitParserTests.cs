@@ -1,7 +1,7 @@
 using System.Text;
-using GitSwitchBranch.Utils;
+using GitSwitchBranch.GitClient;
 
-namespace Tests.Utils;
+namespace Tests.GitClient;
 
 public class GitParserTests
 {

@@ -1,6 +1,6 @@
 using GitSwitchBranch.Models;
 
-namespace GitSwitchBranch.Utils;
+namespace GitSwitchBranch.GitClient;
 
 public static class GitParser
 {
