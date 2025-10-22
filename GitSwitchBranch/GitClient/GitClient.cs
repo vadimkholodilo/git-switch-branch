@@ -9,7 +9,7 @@ public class GitClient
 
     public GitClient(string currentDirectoryPath)
     {
-        _currentDirectoryPath = currentDirectoryPath;
+        _currentDirectoryPath = currentDirectoryPath ?? throw new ArgumentNullException(nameof(currentDirectoryPath));
     }
 
     public bool IsRepository()
@@ -59,7 +59,8 @@ public class GitClient
                 UseShellExecute = false,
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,
-                CreateNoWindow = true
+                CreateNoWindow = true,
+                WorkingDirectory = _currentDirectoryPath
             };
 
             if (!process.Start())
