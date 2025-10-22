@@ -11,14 +11,12 @@ class Program
     static void Main(string[] args)
     {
         BaseView view = new SimpleView(DefaultWidth, DefaultHeight);
+        var gitClient = new GitClient.GitClient(Environment.CurrentDirectory);
 
-        List<Branch> branches =
-        [
-            new Branch("master", true),
-            new Branch("development", false),
-            new Branch("hotfix", false)
-        ];
+        CheckIfGitIsAvailable(gitClient);
+        CheckRepository(gitClient);
 
+        var branches = GetBranches(gitClient);
         var selectedBranchIndex = view.DisplayBranchesAndGetBranchIndex(branches);
 
         if (selectedBranchIndex == -1)
@@ -27,10 +25,33 @@ class Program
             Environment.Exit(0);
         }
 
-        CheckoutBranch(branches[selectedBranchIndex]);
+        CheckoutBranch(gitClient, branches[selectedBranchIndex]);
     }
 
-    private static void CheckoutBranch(Branch branch)
+    private static void CheckIfGitIsAvailable(GitClient.GitClient client)
+    {
+        if (!client.IsGitAvailable())
+        {
+            Console.WriteLine("Git was not found on your system. It is either not installed or not in your PATH, quitting");
+            Environment.Exit(-1);
+        }
+    }
+
+    private static void CheckRepository(GitClient.GitClient client)
+    {
+        if (!client.IsRepository())
+        {
+            Console.WriteLine("Current directory is not a git repository. Quitting");
+            Environment.Exit(-2);
+        }
+    }
+
+    private static List<Branch> GetBranches(GitClient.GitClient client)
+    {
+        return client.GetAllBranches().ToList();
+    }
+
+    private static void CheckoutBranch(GitClient.GitClient client, Branch branch)
     {
         if (branch.IsActive)
         {
@@ -38,6 +59,7 @@ class Program
             return;
         }
 
+        client.CheckoutBranch(branch.Name);
         Console.WriteLine($"Checked out {branch.Name}");
     }
 }
