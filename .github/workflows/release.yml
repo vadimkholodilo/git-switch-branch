@@ -40,27 +40,27 @@ jobs:
               run: dotnet restore ./GitSwitchBranch/GitSwitchBranch.csproj
 
             - name: Publish
+              shell: bash
               run: |
-                  $RID = "${{ matrix.rid }}"
-                  $CONFIG = "Release"
-                  $DOTNET_PROJECT = "GitSwitchBranch/GitSwitchBranch.csproj"
+                  RID=${{ matrix.rid }}
+                  CONFIG=Release
+                  DOTNET_PROJECT=GitSwitchBranch/GitSwitchBranch.csproj
                   dotnet publish $DOTNET_PROJECT -c $CONFIG -r $RID -o publish/$RID
 
             - name: Package
+              shell: bash
               run: |
-                  $OS = "${{ matrix.os }}"
-                  $RID = "${{ matrix.rid }}"
-                  $ARCHIVE = "git-switch-branch-${{ github.ref_name }}-${RID}.${{ matrix.archive_ext }}"
-                  New-Item -ItemType Directory -Force -Path out, artifacts
-                  if ($OS -eq 'windows-latest') {
-                      Compress-Archive -Path "publish/$RID/*" -DestinationPath "out/$ARCHIVE"
-                  } else {
-                      Set-Location "publish/$RID"
-                      & tar -czf "../../out/$ARCHIVE" .
-                      Set-Location -
-                  }
+                  set -e
+                  RID=${{ matrix.rid }}
+                  ARCHIVE=git-switch-branch-${{ github.ref_name }}-${RID}.${{ matrix.archive_ext }}
+                  mkdir -p out artifacts
+                  if [[ "${{ matrix.os }}" == 'windows-latest' ]]; then
+                    powershell -Command "Compress-Archive -Path publish/$RID/* -DestinationPath out/$ARCHIVE"
+                  else
+                    cd publish/$RID && tar -czf ../../out/$ARCHIVE . && cd -
+                  fi
                   # move artifact to a flat artifacts folder for release job to pick up
-                  Move-Item "out/$ARCHIVE" "artifacts/$ARCHIVE"
+                  mv out/$ARCHIVE artifacts/$ARCHIVE
 
             - name: Upload artifact
               uses: actions/upload-artifact@v4
