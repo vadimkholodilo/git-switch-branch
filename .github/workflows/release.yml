@@ -1,0 +1,95 @@
+name: Release
+
+on:
+    push:
+        tags:
+            - "V*.*.*"
+
+jobs:
+    build:
+        name: Build for multiple platforms
+        runs-on: ${{ matrix.os }}
+        strategy:
+            matrix:
+                os: [ubuntu-latest, macos-latest, windows-latest]
+                dotnet-runtime: ["net9.0"]
+                include:
+                    - os: ubuntu-latest
+                      rid: linux-x64
+                      archive_ext: zip
+                    - os: ubuntu-latest
+                      rid: linux-arm64
+                      archive_ext: zip
+                    - os: macos-latest
+                      rid: osx-x64
+                      archive_ext: zip
+                    - os: macos-latest
+                      rid: osx-arm64
+                      archive_ext: zip
+                    - os: windows-latest
+                      rid: win-x64
+                      archive_ext: zip
+                    
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+
+            - name: Setup .NET
+              uses: actions/setup-dotnet@v4
+              with:
+                  dotnet-version: 9.0.x
+
+            - name: Restore
+              run: dotnet restore ./GitSwitchBranch/GitSwitchBranch.csproj
+
+            - name: Publish
+              run: |
+                  RID=${{ matrix.rid }}
+                  CONFIG=Release
+                  DOTNET_PROJECT=GitSwitchBranch/GitSwitchBranch.csproj
+                  dotnet publish $DOTNET_PROJECT -c $CONFIG -r $RID -o publish/$RID
+
+            - name: Package
+              run: |
+                  set -e
+                  RID=${{ matrix.rid }}
+                  ARCHIVE=git-switch-branch-${{ github.ref_name }}-${RID}.${{ matrix.archive_ext }}
+                  mkdir -p out artifacts
+                  if [[ "${{ matrix.os }}" == 'windows-latest' ]]; then
+                    powershell -Command "Compress-Archive -Path publish/$RID/* -DestinationPath out/$ARCHIVE"
+                  else
+                    cd publish/$RID && zip -r ../../out/$ARCHIVE . && cd -
+                  fi
+                  # move artifact to a flat artifacts folder for release job to pick up
+                  mv out/$ARCHIVE artifacts/$ARCHIVE
+                  echo "::set-output name=archive::artifacts/$ARCHIVE"
+
+            - name: Upload artifact
+              uses: actions/upload-artifact@v4
+              with:
+                  name: ${{ matrix.rid }}-artifact
+                  path: out/
+
+    create_release:
+        name: Create GitHub Release and attach assets
+        needs: build
+        runs-on: ubuntu-latest
+        steps:
+        - name: Download build artifacts
+          uses: actions/download-artifact@v4
+          with:
+            path: artifacts
+
+        - name: Create Release and upload per-OS assets
+          id: create_release
+          uses: softprops/action-gh-release@v1
+          with:
+            tag_name: ${{ github.ref_name }}
+            name: ${{ github.ref_name }}
+            release_name: ${{ github.ref_name }}
+            body: |
+              Automated release from tag ${{ github.ref_name }}
+            files: |
+              artifacts/*
+          env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
