@@ -5,7 +5,7 @@
     <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <PublishAot>true</PublishAot>
+    <PublishAot Condition="'$(RuntimeIdentifier)' != 'linux-arm64'">true</PublishAot>
     <SelfContained>true</SelfContained>
     <PublishTrimmed>true</PublishTrimmed>
     <RuntimeIdentifiers>win-x64;win-arm64;linux-x64;linux-arm64;osx-x64;osx-arm64</RuntimeIdentifiers>
