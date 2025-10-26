@@ -17,7 +17,7 @@ class Program
         CheckIfGitIsAvailable(gitClient);
         CheckRepository(gitClient);
         FluentArgsBuilder.New()
-            .DefaultConfigsWithAppDescription("Switch git branches interractively")
+            .DefaultConfigsWithAppDescription("Switch git branches interactively")
             .PositionalArgument<string>()
             .WithDescription("The branch name to search")
             .WithExamples("master", "development")
@@ -26,14 +26,14 @@ class Program
             .Parse(args);
     }
 
-    private static void SelectBranch(GitClient.GitClient gitClient, BaseView view, string branchNameToSearch)
+    private static void SelectBranch(GitClient.GitClient gitClient, BaseView view, string? branchNameToSearch)
     {
         var branches = branchNameToSearch != null ? SearchBranch(gitClient, branchNameToSearch) : GetBranches(gitClient);
 
         if (branches.Count == 0)
         {
             Console.WriteLine("No branches to display");
-            Environment.Exit(-3);
+            Exit(ExitCode.NoBranches);
         }
 
         if (branches.Count == 1)
@@ -58,7 +58,7 @@ class Program
         if (!client.IsGitAvailable())
         {
             Console.WriteLine("Git was not found on your system. It is either not installed or not in your PATH, quitting");
-            Environment.Exit(-1);
+            Exit(ExitCode.GitNotInstalled);
         }
     }
 
@@ -67,7 +67,7 @@ class Program
         if (!client.IsRepository())
         {
             Console.WriteLine($"'{Environment.CurrentDirectory}' is not a git repository. Quitting");
-            Environment.Exit(-2);
+            Exit(ExitCode.NotRepository);
         }
     }
 
@@ -97,4 +97,6 @@ class Program
         client.CheckoutBranch(branch.Name);
         Console.WriteLine($"Checked out {branch.Name}");
     }
+
+    private static void Exit(ExitCode exitCode = ExitCode.Success) => Environment.Exit((int)exitCode);
 }
