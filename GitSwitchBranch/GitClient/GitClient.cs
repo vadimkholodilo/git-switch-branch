@@ -75,21 +75,21 @@ public class GitClient
             {
                 throw new GitNotFoundException();
             }
-        
+
             if (!process.WaitForExit(timeoutMs))
             {
                 process.Kill();
                 throw new GitCommandTimeoutException();
             }
-        
+
             string output = process.StandardOutput.ReadToEnd();
             string error = process.StandardError.ReadToEnd();
-        
+
             if (process.ExitCode != 0 && !string.IsNullOrEmpty(error))
             {
                 throw new GitCommandExecutionException($"Git command failed: {error}");
             }
-        
+
             return output;
         }
         catch (System.ComponentModel.Win32Exception)
