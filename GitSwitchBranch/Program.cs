@@ -1,4 +1,5 @@
-﻿using GitSwitchBranch.Models;
+﻿using FluentArgs;
+using GitSwitchBranch.Models;
 using GitSwitchBranch.Views;
 
 namespace GitSwitchBranch;
@@ -17,6 +18,11 @@ class Program
         CheckRepository(gitClient);
 
         string branchNameToSearch = "master";
+        SelectBranch(branchNameToSearch, gitClient, view);
+    }
+
+    private static void SelectBranch(string branchNameToSearch, GitClient.GitClient gitClient, BaseView view)
+    {
         var branches = branchNameToSearch != null ? SearchBranch(gitClient, branchNameToSearch) : GetBranches(gitClient);
 
         if (branches.Count == 1)
