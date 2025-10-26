@@ -12,7 +12,7 @@ public class SimpleView(int width, int height) : BaseView(width, height)
     public override int DisplayBranchesAndGetBranchIndex(IReadOnlyList<Branch> branches)
     {
         if (branches is null || branches.Count == 0)
-            return -1;
+            throw new ArgumentNullException(nameof(branches));
 
         Console.WriteLine("Branches: ");
         for(var i = 0; i < branches.Count; i++)

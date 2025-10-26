@@ -30,6 +30,12 @@ class Program
     {
         var branches = branchNameToSearch != null ? SearchBranch(gitClient, branchNameToSearch) : GetBranches(gitClient);
 
+        if (branches.Count == 0)
+        {
+            Console.WriteLine("No branches to display");
+            Environment.Exit(-3);
+        }
+
         if (branches.Count == 1)
         {
             CheckoutBranch(gitClient, branches[0]);
