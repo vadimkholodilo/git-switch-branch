@@ -15,7 +15,7 @@ public class SimpleView(int width, int height) : BaseView(width, height)
             throw new ArgumentNullException(nameof(branches));
 
         Console.WriteLine("Branches: ");
-        for(var i = 0; i < branches.Count; i++)
+        for (var i = 0; i < branches.Count; i++)
         {
             DisplayBranch(branches[i], i + 1);
         }
