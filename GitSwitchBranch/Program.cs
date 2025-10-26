@@ -16,12 +16,17 @@ class Program
 
         CheckIfGitIsAvailable(gitClient);
         CheckRepository(gitClient);
-
-        string branchNameToSearch = "master";
-        SelectBranch(branchNameToSearch, gitClient, view);
+        FluentArgsBuilder.New()
+            .DefaultConfigsWithAppDescription("Switch git branches interractively")
+            .PositionalArgument<string>()
+            .WithDescription("The branch name to search")
+            .WithExamples("master", "development")
+            .IsOptional()
+            .Call(branchNameToSearch => SelectBranch(gitClient, view, branchNameToSearch))
+            .Parse(args);
     }
 
-    private static void SelectBranch(string branchNameToSearch, GitClient.GitClient gitClient, BaseView view)
+    private static void SelectBranch(GitClient.GitClient gitClient, BaseView view, string branchNameToSearch)
     {
         var branches = branchNameToSearch != null ? SearchBranch(gitClient, branchNameToSearch) : GetBranches(gitClient);
 
