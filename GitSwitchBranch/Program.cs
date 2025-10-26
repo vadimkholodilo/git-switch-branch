@@ -16,7 +16,15 @@ class Program
         CheckIfGitIsAvailable(gitClient);
         CheckRepository(gitClient);
 
-        var branches = GetBranches(gitClient);
+        string branchNameToSearch = "master";
+        var branches = branchNameToSearch != null ? SearchBranch(gitClient, branchNameToSearch) : GetBranches(gitClient);
+
+        if (branches.Count == 1)
+        {
+            CheckoutBranch(gitClient, branches[0]);
+            Environment.Exit(0);
+        }
+
         var selectedBranchIndex = view.DisplayBranchesAndGetBranchIndex(branches);
 
         if (selectedBranchIndex == -1)
@@ -41,7 +49,7 @@ class Program
     {
         if (!client.IsRepository())
         {
-            Console.WriteLine("Current directory is not a git repository. Quitting");
+            Console.WriteLine($"'{Environment.CurrentDirectory}' is not a git repository. Quitting");
             Environment.Exit(-2);
         }
     }
@@ -49,6 +57,16 @@ class Program
     private static List<Branch> GetBranches(GitClient.GitClient client)
     {
         return client.GetAllBranches().ToList();
+    }
+
+    private static List<Branch> SearchBranch(GitClient.GitClient client, string branchNameToSearch)
+    {
+        if (string.IsNullOrEmpty(branchNameToSearch))
+            throw new ArgumentNullException(nameof(branchNameToSearch));
+
+        return client.GetAllBranches()
+            .Where(b => b.Name.Contains(branchNameToSearch, StringComparison.InvariantCultureIgnoreCase))
+            .ToList();
     }
 
     private static void CheckoutBranch(GitClient.GitClient client, Branch branch)
