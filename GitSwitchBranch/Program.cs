@@ -26,9 +26,9 @@ class Program
             .Parse(args);
     }
 
-    private static void SelectBranch(GitClient.GitClient gitClient, BaseView view, string? branchNameToSearch)
+    private static void SelectBranch(GitClient.GitClient gitClient, BaseView view, string? branchNameToSearch, bool includeRemote = false)
     {
-        var branches = branchNameToSearch != null ? SearchBranch(gitClient, branchNameToSearch) : GetBranches(gitClient);
+        var branches = branchNameToSearch != null ? SearchBranch(gitClient, branchNameToSearch) : GetBranches(gitClient, includeRemote);
 
         if (branches.Count == 0)
         {
@@ -71,9 +71,9 @@ class Program
         }
     }
 
-    private static List<Branch> GetBranches(GitClient.GitClient client)
+    private static List<Branch> GetBranches(GitClient.GitClient client, bool includeRemote)
     {
-        return client.GetAllBranches().ToList();
+        return client.GetAllBranches(includeRemote).ToList();
     }
 
     private static List<Branch> SearchBranch(GitClient.GitClient client, string branchNameToSearch)
