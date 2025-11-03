@@ -11,7 +11,7 @@ This tool helps when your team uses long branch names (for example including tas
 - Smart search: pass part of a branch name to either:
   - Switch directly if there's exactly one match
   - Get a filtered list if multiple branches match
-- Works on macOS, Linux and Windows (prebuilt, self-contained binaries are available in Releases).
+- Works on macOS, Linux and Windows (native, prebuilt, self-contained binaries are available in Releases).
 
 ## Quick examples
 
