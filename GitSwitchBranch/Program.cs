@@ -90,7 +90,7 @@ class Program
         if (string.IsNullOrEmpty(branchNameToSearch))
             throw new ArgumentNullException(nameof(branchNameToSearch));
 
-        return client.GetAllBranches()
+        return client.GetAllBranches(true)
             .Where(b => b.Name.Contains(branchNameToSearch, StringComparison.InvariantCultureIgnoreCase))
             .ToList();
     }
