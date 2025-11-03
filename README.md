@@ -29,6 +29,11 @@ git-switch-branch PROJECT-123
 # If multiple matches: shows numbered list of matching branches
 ```
 
+```bash
+GitSwitchBranch -r | --remote
+# Include remote branches
+```
+
 ## Installation
 
 Download the latest pre-built binary for your platform from the Releases page and place the executable in a folder on your PATH (for example `/usr/local/bin` on macOS/Linux or a user-local `bin` folder on Windows).
