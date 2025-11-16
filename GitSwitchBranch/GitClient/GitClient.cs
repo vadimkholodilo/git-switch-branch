@@ -1,4 +1,5 @@
 using System.Diagnostics;
+
 using GitSwitchBranch.Models;
 
 namespace GitSwitchBranch.GitClient;
