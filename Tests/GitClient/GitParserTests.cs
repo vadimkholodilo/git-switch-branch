@@ -1,5 +1,7 @@
 using System.Text;
+
 using GitSwitchBranch.GitClient;
+using GitSwitchBranch.Models;
 
 namespace Tests.GitClient;
 
@@ -8,8 +10,8 @@ public class GitParserTests
     [Fact]
     public void ParseBranches_ShouldReturnEmptyList_WhenOutputIsNullOrEmpty()
     {
-        var nullOutputResult = GitParser.ParseBranches(null).ToList();
-        var emptyOutputResult = GitParser.ParseBranches("").ToList();
+        List<Branch> nullOutputResult = GitParser.ParseBranches(null).ToList();
+        List<Branch> emptyOutputResult = GitParser.ParseBranches("").ToList();
 
         Assert.Empty(nullOutputResult);
         Assert.Empty(emptyOutputResult);
@@ -21,11 +23,11 @@ public class GitParserTests
     [InlineData("\r\n")]
     public void ParseBranches_ShouldParseSuccessfully_WhenOutputContainsDifferentLineEndings(string eol)
     {
-        var sb = new StringBuilder();
+        StringBuilder sb = new();
         sb.Append("master").Append(eol);
         sb.Append("development").Append(eol);
 
-        var result = GitParser.ParseBranches(sb.ToString()).ToList();
+        List<Branch> result = GitParser.ParseBranches(sb.ToString()).ToList();
 
         Assert.Equal(2, result.Count);
         Assert.Equal("master", result[0].Name);
@@ -35,15 +37,15 @@ public class GitParserTests
     [Fact]
     public void ParseBranches_ShouldParseActiveBranch_WhenBranchNameStartsWithStar()
     {
-        var sb = new StringBuilder();
+        StringBuilder sb = new();
         sb.AppendLine("* master");
         sb.AppendLine("development");
 
-        var result = GitParser.ParseBranches(sb.ToString()).ToList();
+        List<Branch> result = GitParser.ParseBranches(sb.ToString()).ToList();
 
         Assert.Equal(2, result.Count);
-        var masterBranch = result[0];
-        var developmentBranch = result[1];
+        Branch masterBranch = result[0];
+        Branch developmentBranch = result[1];
         Assert.Equal("master", masterBranch.Name);
         Assert.True(masterBranch.IsActive);
         Assert.Equal("development", developmentBranch.Name);
@@ -52,11 +54,11 @@ public class GitParserTests
     [Fact]
     public void ParseBranches_ShouldTrimBranchName()
     {
-        var sb = new StringBuilder();
+        StringBuilder sb = new();
         sb.AppendLine("      master            ");
         sb.AppendLine("                development                 ");
 
-        var result = GitParser.ParseBranches(sb.ToString()).ToList();
+        List<Branch> result = GitParser.ParseBranches(sb.ToString()).ToList();
 
         Assert.Equal(2, result.Count);
         Assert.Equal("master", result[0].Name);
@@ -66,7 +68,7 @@ public class GitParserTests
     [Fact]
     public void ParseBranches_ShouldThrowArgumentException_WhenMoreThanOneActiveBranchWasFoundInOutput()
     {
-        var sb = new StringBuilder();
+        StringBuilder sb = new();
         sb.AppendLine("* master");
         sb.AppendLine("* development");
 

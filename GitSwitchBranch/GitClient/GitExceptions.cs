@@ -1,7 +1,7 @@
 namespace GitSwitchBranch.GitClient;
 
 /// <summary>
-/// Exception thrown when Git is not installed or not found in PATH.
+///     Exception thrown when Git is not installed or not found in PATH.
 /// </summary>
 public class GitNotFoundException : Exception
 {
@@ -13,7 +13,7 @@ public class GitNotFoundException : Exception
 }
 
 /// <summary>
-/// Exception thrown when a Git command execution fails.
+///     Exception thrown when a Git command execution fails.
 /// </summary>
 public class GitCommandExecutionException : Exception
 {
@@ -23,7 +23,7 @@ public class GitCommandExecutionException : Exception
 }
 
 /// <summary>
-/// Exception thrown when a Git command times out.
+///     Exception thrown when a Git command times out.
 /// </summary>
 public class GitCommandTimeoutException : Exception
 {

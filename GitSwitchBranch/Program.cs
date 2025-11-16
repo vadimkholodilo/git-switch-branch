@@ -1,29 +1,30 @@
 ﻿using FluentArgs;
+
 using GitSwitchBranch.Models;
 using GitSwitchBranch.Views;
 
 namespace GitSwitchBranch;
 
-class Program
+internal class Program
 {
     private const int DefaultWidth = 80;
     private const int DefaultHeight = 40;
 
-    static void Main(string[] args)
+    private static void Main(string[] args)
     {
         BaseView view = new SimpleView(DefaultWidth, DefaultHeight);
-        var gitClient = new GitClient.GitClient(Environment.CurrentDirectory);
+        GitClient.GitClient gitClient = new(Environment.CurrentDirectory);
 
         CheckIfGitIsAvailable(gitClient);
         CheckRepository(gitClient);
         FluentArgsBuilder.New()
             .DefaultConfigsWithAppDescription("Switch git branches interactively")
             .Flag("-r", "--remote")
-                .WithDescription("Include remote branches in the listing")
+            .WithDescription("Include remote branches in the listing")
             .PositionalArgument<string>()
-                .WithDescription("The branch name to search")
-                .WithExamples("master", "development")
-                .IsOptional()
+            .WithDescription("The branch name to search")
+            .WithExamples("master", "development")
+            .IsOptional()
             // Use a curried delegate as required by FluentArgs: flag => positional => action
             // Note: FluentArgs provides curried parameters in reverse registration order
             // (last registered argument is provided first to the Call), so the lambda below
@@ -35,9 +36,12 @@ class Program
             .Parse(args ?? Array.Empty<string>());
     }
 
-    private static void SelectBranch(GitClient.GitClient gitClient, BaseView view, string? branchNameToSearch, bool includeRemote = false)
+    private static void SelectBranch(GitClient.GitClient gitClient, BaseView view, string? branchNameToSearch,
+        bool includeRemote = false)
     {
-        var branches = branchNameToSearch != null ? SearchBranch(gitClient, branchNameToSearch) : GetBranches(gitClient, includeRemote);
+        List<Branch> branches = branchNameToSearch != null
+            ? SearchBranch(gitClient, branchNameToSearch)
+            : GetBranches(gitClient, includeRemote);
 
         if (branches.Count == 0)
         {
@@ -51,7 +55,7 @@ class Program
             Environment.Exit(0);
         }
 
-        var selectedBranchIndex = view.DisplayBranchesAndGetBranchIndex(branches);
+        int selectedBranchIndex = view.DisplayBranchesAndGetBranchIndex(branches);
 
         if (selectedBranchIndex == -1)
         {
@@ -66,7 +70,8 @@ class Program
     {
         if (!client.IsGitAvailable())
         {
-            Console.WriteLine("Git was not found on your system. It is either not installed or not in your PATH, quitting");
+            Console.WriteLine(
+                "Git was not found on your system. It is either not installed or not in your PATH, quitting");
             Exit(ExitCode.GitNotInstalled);
         }
     }
@@ -88,7 +93,9 @@ class Program
     private static List<Branch> SearchBranch(GitClient.GitClient client, string branchNameToSearch)
     {
         if (string.IsNullOrEmpty(branchNameToSearch))
+        {
             throw new ArgumentNullException(nameof(branchNameToSearch));
+        }
 
         return client.GetAllBranches(true)
             .Where(b => b.Name.Contains(branchNameToSearch, StringComparison.InvariantCultureIgnoreCase))
@@ -107,5 +114,8 @@ class Program
         Console.WriteLine($"Checked out {branch.Name}");
     }
 
-    private static void Exit(ExitCode exitCode = ExitCode.Success) => Environment.Exit((int)exitCode);
+    private static void Exit(ExitCode exitCode = ExitCode.Success)
+    {
+        Environment.Exit((int)exitCode);
+    }
 }
