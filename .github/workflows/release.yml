@@ -74,7 +74,7 @@ jobs:
     create_release:
         name: Create GitHub Release and attach assets
         needs: build
-        runs-on: ubuntu-2024.04
+        runs-on: ubuntu-latest
         permissions:
             contents: write
         steps:
