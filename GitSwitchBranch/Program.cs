@@ -46,7 +46,7 @@ internal class Program
         if (branches.Count == 0)
         {
             Console.WriteLine("No branches to display");
-            Exit(ExitCode.NoBranches);
+            Environment.Exit(0);
         }
 
         if (branches.Count == 1)
@@ -72,7 +72,7 @@ internal class Program
         {
             Console.WriteLine(
                 "Git was not found on your system. It is either not installed or not in your PATH, quitting");
-            Exit(ExitCode.GitNotInstalled);
+            Environment.Exit(0);
         }
     }
 
@@ -81,7 +81,7 @@ internal class Program
         if (!client.IsRepository())
         {
             Console.WriteLine($"'{Environment.CurrentDirectory}' is not a git repository. Quitting");
-            Exit(ExitCode.NotRepository);
+            Environment.Exit(0);
         }
     }
 
@@ -112,10 +112,5 @@ internal class Program
 
         client.CheckoutBranch(branch.Name);
         Console.WriteLine($"Checked out {branch.Name}");
-    }
-
-    private static void Exit(ExitCode exitCode = ExitCode.Success)
-    {
-        Environment.Exit((int)exitCode);
     }
 }
